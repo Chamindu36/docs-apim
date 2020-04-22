@@ -86,8 +86,60 @@ WSO2 API Controller, **apictl** allows to create and deploy APIs without using W
                         `--oas` : Provide an OpenAPI specification file/URL for the API   
                         `--force` or `-f` : To overwrite directory and create project 
 
+    !!! note
+        You can define scopes for a resource when defining a Swagger2 or OpenAPI3 specification to generate an API.
 
-     A project folder with the following default structure will be created in the given directory.
+            !!! example
+                ```yaml
+                openapi: 3.0.0
+                info:
+                title: Online-Store
+                version: v1.0.0
+                description: This API contains operations related to online shopping store.
+                x-wso2-basePath: /store/{version}
+                x-wso2-production-endpoints:
+                urls:
+                    - http://products
+                paths:
+                /products:
+                    get:
+                    responses:
+                        "200":
+                        description: successful operation
+                /products/{productId}:
+                    get:
+                    parameters:
+                        - name: productId
+                        in: path
+                        required: true
+                        schema:
+                            type: string
+                    security: 
+                        - 
+                        default: 
+                            - "read"
+                    responses:
+                        "200":
+                        description: successful operation
+                components: 
+                securitySchemes: 
+                    default: 
+                        type: "oauth2"
+                        flows: 
+                            implicit: 
+                            authorizationUrl: "https://test.com"
+                            scopes: 
+                                read: ""
+                            x-scopes-bindings: 
+                                read: "admin"
+                ```
+
+        First you need to define the scope name ("read") under `security > default` section inside the required resource and then define the role binding under the `securitySchemes` section. You can use your choice of name as the security scheme.
+
+        Make sure to set the security type as **`oauth2`** when defining the scopes and when defining roles under a particular scope make sure that roles are include in **x-scopes-bindings:**  then scope name and the role permitted by the scope.        
+
+
+    A project folder with the following default structure will be created in the given directory.
 
     ``` java
     ├── api_params.yaml
